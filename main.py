@@ -31,8 +31,10 @@ class StartGeneration:
     min_pattern1_imp = [0, 3, 7, 12]
     min_pattern1_num_important = len(min_pattern1_imp)
 
-    pattern = [0] * len(maj_pattern1)
+    pattern_original = [0] * len(maj_pattern1)
     pattern_grouped = [0] * len(maj_pattern1)
+    pattern_with_octaves = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    octave_chance = 20
 
     one_array = [-1, 1]
 
@@ -55,21 +57,52 @@ class StartGeneration:
         unit2 = self.generate_unit()
         unit3 = self.generate_unit()
         last_note = (unit1[0] + random.choice(self.one_array)) % len(self.maj_pattern1)
-        self.pattern = unit1 + unit2 + unit3
+        self.pattern_original = unit1 + unit2 + unit3 + [last_note]
         self.pattern_grouped = [unit1, unit2, unit3, [last_note]]
+        return
+    
+    def add_octaves(self):
+        i = 0
+        for unit in self.pattern_grouped:
+            j = 0
+            for degree in unit:
+                num = random.randint(1, 100)
+                print("rand num: " + str(num))
+                if num > self.octave_chance:
+                    self.pattern_with_octaves[i][j] = degree + 12
+                    print("changed! " + str(degree + 12))
+                j = j + 1
+
+            i = i + 1
+
+    def play_octaves(self):
+        i = 0
+        for unit in self.pattern_with_octaves:
+            client.send_message("playing", 1)
+            j = 0
+            for degree in unit:
+                client.send_message("playing", 1)
+                print(self.pattern_with_octaves[i][j])
+                client.send_message("midi", self.pattern_with_octaves[i][j])
+                time.sleep(.2)
+                j = j + 1
+                client.send_message("playing", 0)
+                print(str(i) + " " + str(j))
+            i = i + 1
+            time.sleep(.1)
+            client.send_message("playing", 0)
+        client.send_message("playing", 0)
         return
 
     def play_pattern(self):
         i = 0
         for degree in self.pattern:
-            playing = 1
-            client.send_message("playing", playing)
-            client.send_message("midi", self.pattern[i])
+            client.send_message("playing", 1)
+            client.send_message("midi", self.pattern_original[i])
             print(self.pattern[i])
             i = i + 1
             time.sleep(.5)
-        playing = 0
-        client.send_message("playing", playing)
+        client.send_message("playing", 0)
 
     def play_pattern_groups_of_3(self):
         i = 0
@@ -98,9 +131,15 @@ my_generation = StartGeneration()
 
 my_generation.generate_pattern()
 
-print(my_generation.pattern)
+print(my_generation.pattern_original)
 print(my_generation.pattern_grouped)
+print(my_generation.pattern_with_octaves)
 
 #my_generation.play_pattern()
 my_generation.play_pattern_groups_of_3()
+
+my_generation.add_octaves()
+
+#my_generation.add_octaves
+my_generation.play_octaves()
 
