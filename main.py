@@ -18,7 +18,6 @@ class StartGeneration:
     second = 1
     third = 2
     fourth = 3
-    ###
     fifth = 4
     sixth = 5
     seventh = 6
@@ -33,6 +32,9 @@ class StartGeneration:
     min_pattern1_num_important = len(min_pattern1_imp)
 
     pattern = [0] * len(maj_pattern1)
+    pattern_grouped = [0] * len(maj_pattern1)
+
+    one_array = [-1, 1]
 
 
 
@@ -40,11 +42,10 @@ class StartGeneration:
         # choose tonic, third or fifth
         chosen_index = random.randint(0, len(self.maj_pattern1_imp) - 1)
         chosen_degree = self.maj_pattern1_imp[chosen_index]
-        one_array = [-1, 1]
         # add neighbors
-        neighbor1_index = (chosen_degree + 1*random.choice(one_array)) % len(self.maj_pattern1)
-        neighbor2_index = (neighbor1_index + 1*random.choice(one_array)) % len(self.maj_pattern1)
-        neighbor3_index = (neighbor2_index + 1*random.choice(one_array)) % len(self.maj_pattern1)
+        neighbor1_index = (chosen_degree + random.choice(self.one_array)) % len(self.maj_pattern1)
+        neighbor2_index = (neighbor1_index + random.choice(self.one_array)) % len(self.maj_pattern1)
+        neighbor3_index = (neighbor2_index + random.choice(self.one_array)) % len(self.maj_pattern1)
         print("neighbor1_index: " + str(neighbor1_index))
         print("neighbor2_index: " + str(neighbor2_index))
         return [neighbor1_index, neighbor2_index, neighbor3_index]
@@ -53,29 +54,53 @@ class StartGeneration:
         unit1 = self.generate_unit()
         unit2 = self.generate_unit()
         unit3 = self.generate_unit()
+        last_note = (unit1[0] + random.choice(self.one_array)) % len(self.maj_pattern1)
         self.pattern = unit1 + unit2 + unit3
-        return unit1 + unit2 + unit3
+        self.pattern_grouped = [unit1, unit2, unit3, [last_note]]
+        return
 
     def play_pattern(self):
         i = 0
         for degree in self.pattern:
             playing = 1
             client.send_message("playing", playing)
-            client.send_message("midi", pattern[i])
-            print(pattern[i])
+            client.send_message("midi", self.pattern[i])
+            print(self.pattern[i])
             i = i + 1
             time.sleep(.5)
         playing = 0
         client.send_message("playing", playing)
+
+    def play_pattern_groups_of_3(self):
+        i = 0
+        for unit in self.pattern_grouped:
+            client.send_message("playing", 1)
+            j = 0
+            for degree in unit:
+                client.send_message("playing", 1)
+                print(self.pattern_grouped[i][j])
+                client.send_message("midi", self.pattern_grouped[i][j])
+                time.sleep(.2)
+                j = j + 1
+                client.send_message("playing", 0)
+            i = i + 1
+            time.sleep(.1)
+            client.send_message("playing", 0)
+        client.send_message("playing", 0)
+        return
+        
+
 
 
 
 
 my_generation = StartGeneration()
 
-pattern = my_generation.generate_pattern()
+my_generation.generate_pattern()
 
-print(pattern)
+print(my_generation.pattern)
+print(my_generation.pattern_grouped)
 
-my_generation.play_pattern()
+#my_generation.play_pattern()
+my_generation.play_pattern_groups_of_3()
 
