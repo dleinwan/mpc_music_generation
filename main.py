@@ -33,7 +33,7 @@ class StartGeneration:
 
     pattern_original = [0] * len(maj_pattern1)
     pattern_grouped = [0] * len(maj_pattern1)
-    pattern_with_octaves = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    pattern_with_octaves = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0]]
     octave_chance = 20
 
     one_array = [-1, 1]
@@ -87,7 +87,7 @@ class StartGeneration:
                 time.sleep(.2)
                 j = j + 1
                 client.send_message("playing", 0)
-                print(str(i) + " " + str(j))
+                #print(str(i) + " " + str(j))
             i = i + 1
             time.sleep(.1)
             client.send_message("playing", 0)
@@ -138,8 +138,12 @@ print(my_generation.pattern_with_octaves)
 #my_generation.play_pattern()
 my_generation.play_pattern_groups_of_3()
 
-my_generation.add_octaves()
+time.sleep(.5)
 
-#my_generation.add_octaves
+my_generation.add_octaves()
 my_generation.play_octaves()
+
+print("original: " + str(my_generation.pattern_original))
+print("grouped: " + str(my_generation.pattern_grouped))
+print("with octaves: " + str(my_generation.pattern_with_octaves))
 
