@@ -3,6 +3,9 @@ import random
 import time
 import sys
 import signal
+import csv
+import pandas as pd 
+import numpy as np
 
 IP = "127.0.0.1"
 PORT_TO_MAX = 1001
@@ -131,16 +134,20 @@ class StartGeneration:
         return
 
     def play_pattern(self):
+        IP = "127.0.0.1"
+        PORT_TO_MAX = 1001
+        client_ = udp_client.SimpleUDPClient(IP, PORT_TO_MAX)
         i = 0
-        self.client.send_message("playing", 1)
+        client_.send_message("playing", 1)
         for degree in self.pattern_original:
             # self.client.send_message("playing", 1)
-            self.client.send_message("midi", self.pattern_original[i])
+            client_.send_message("midi", self.pattern_original[i])
             print(self.pattern_original[i])
             i = i + 1
             time.sleep(.5)
             # self.client.send_message("playing", 0)
-        self.client.send_message("playing", 0)
+        client_.send_message("playing", 0)
+        time.sleep(1)
 
     def play_pattern_groups_of_3(self):
         i = 0
@@ -170,5 +177,32 @@ class StartGeneration:
                 k = k + 1
                 j = j + 1
             i = i + 1
+        return
+    
+    def generate_and_load_to_file(self):
+        arr = np.asarray(self.pattern_original)
+        pd.DataFrame(arr).to_csv('output.csv')   
+
+        with open('output.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            for melody in range(49):
+                self.generate_pattern()
+                for note in self.pattern_original:
+                    writer.writerow(self.pattern_original)
+        
+        file.close()
+
+        return
+    
+    def play_csv(self):
+        with open('output.csv', mode='r', newline='') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                self.pattern_original = row
+                self.play_pattern()
+                print("next")
+                
+        
+        file.close()
         return
     
