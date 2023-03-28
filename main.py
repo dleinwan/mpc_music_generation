@@ -49,4 +49,6 @@ print("grouped: " + str(my_generation.pattern_grouped))
 #my_generation.play_pattern()
 print("")
 
-my_generation.play_csv()
+#my_generation.play_csv()
+
+my_generation.play_best_output()

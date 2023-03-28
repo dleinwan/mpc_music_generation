@@ -63,7 +63,9 @@ class StartGeneration:
     
     def generate_unit_four(self):
         # choose tonic
-        chosen_degree = 0
+        # chosen_degree = 0
+        chosen_index = random.randint(0, len(self.maj_pattern1_imp) - 1)
+        chosen_degree = self.maj_pattern1_imp[chosen_index]
         # add neighbors
         neighbor1_index = (chosen_degree + random.choice(self.one_array)) % len(self.maj_pattern1)
         neighbor2_index = neighbor1_index + 1
@@ -134,16 +136,26 @@ class StartGeneration:
         return
 
     def play_pattern(self):
-        IP = "127.0.0.1"
-        PORT_TO_MAX = 1001
-        client_ = udp_client.SimpleUDPClient(IP, PORT_TO_MAX)
-        i = 0
+        #i = 0
         client_.send_message("playing", 1)
-        for degree in self.pattern_original:
+        for i in range(len(self.pattern_original)):
             # self.client.send_message("playing", 1)
             client_.send_message("midi", self.pattern_original[i])
             print(self.pattern_original[i])
-            i = i + 1
+            #i = i + 1
+            time.sleep(.5)
+            # self.client.send_message("playing", 0)
+        client_.send_message("playing", 0)
+        time.sleep(1)
+
+    def play_pattern_passed(self, pattern):
+        #i = 0
+        client_.send_message("playing", 1)
+        for i in range(len(pattern)):
+            # self.client.send_message("playing", 1)
+            client_.send_message("midi", pattern[i])
+            print(pattern[i])
+            #i = i + 1
             time.sleep(.5)
             # self.client.send_message("playing", 0)
         client_.send_message("playing", 0)
@@ -189,6 +201,7 @@ class StartGeneration:
                 self.generate_pattern()
                 for note in self.pattern_original:
                     writer.writerow(self.pattern_original)
+                time.sleep(.1)
         
         file.close()
 
@@ -199,10 +212,25 @@ class StartGeneration:
             reader = csv.reader(file)
             for row in reader:
                 self.pattern_original = row
+                print("row: " + str(row))
                 self.play_pattern()
                 print("next")
-                
+                return
         
         file.close()
+        return
+    
+    def play_best_output(self):
+        with open('best_output.csv', mode='r', newline='') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                #self.pattern_original = row
+                print("row: " + str(row))
+                self.play_pattern_passed(row)
+                print("next")
+                return
+        
+        file.close()
+
         return
     
