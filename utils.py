@@ -192,9 +192,9 @@ class StartGeneration:
         return
     
     def generate_and_load_to_file(self):
+        print("Generating 50 melodies and writing to csv file...")
         arr = np.asarray(self.pattern_original)
         pd.DataFrame(arr).to_csv('output.csv')   
-
         with open('output.csv', mode='w', newline='') as file:
             writer = csv.writer(file)
             for melody in range(49):
@@ -202,9 +202,8 @@ class StartGeneration:
                 for note in self.pattern_original:
                     writer.writerow(self.pattern_original)
                 time.sleep(.1)
-        
         file.close()
-
+        print("Done")
         return
     
     def play_csv(self):

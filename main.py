@@ -22,7 +22,7 @@ my_generation.generate_and_load_to_file()
 print("BEFORE RANDOMIZATION")
 print("original: " + str(my_generation.pattern_original))
 print("grouped: " + str(my_generation.pattern_grouped))
-my_generation.play_pattern()
+#my_generation.play_pattern()
 print("")
 
 time.sleep(1)
@@ -36,4 +36,4 @@ print("grouped: " + str(my_generation.pattern_grouped))
 print("")
 
 
-my_generation.play_best_output()
+#my_generation.play_best_output()
